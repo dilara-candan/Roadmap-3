@@ -1,52 +1,56 @@
-import time
+import datetime
 
 class WebPush():
-    platform = "Web"
-    optin = True
-    global_frequency_capping = 1
-    start_date = time.time()
-    end_date = time.time() + 86400
-    language = "tr_TR"
-    push_type = ""
+    def __init__(self, platform, optin, global_frequency_capping, start_date, end_date, language, push_type):
+        self.platform = platform
+        self.optin = optin
+        self.global_frequency_capping = global_frequency_capping
+        self.start_date = start_date
+        self.end_date = end_date
+        self.language = language
+        self.push_type = push_type
 
     def send_push(self):
-        print("Push Gönderildi")
+        print("* " +self.push_type + " Push Gönderildi")
+        return self;
+
+    def get_push_info(self):
+        print("* Push Bilgileri: " + str(self.__dict__))
+        return self;
 
 class TriggerPush(WebPush):
-    def __init__(self, trigger_page):
-        if (type(trigger_page) != str):
-            print("Hatalı sayfa tipi")
+    def __init__(self, platform, optin, global_frequency_capping, start_date, end_date, language, push_type, trigger_page):
+        super().__init__(platform, optin, global_frequency_capping, start_date, end_date, language, push_type)
 
-        self.push_type = "TriggerPush"
         self.trigger_page = trigger_page
 
 class BulkPush(WebPush):
-    def __init__(self, send_date):
-        if (type(send_date) != int or send_date < time.time()):
-            print("Hatalı gönderim tarihi")
+    def __init__(self, platform, optin, global_frequency_capping, start_date, end_date, language, push_type, send_date):
+        super().__init__(platform, optin, global_frequency_capping, start_date, end_date, language, push_type)
 
-        self.push_type = "BulkPush"
         self.send_date = send_date
 
 class SegmentPush(WebPush):
-    def __init__(self, segment_name: str):
-        if (type(segment_name) != str):
-            print("Hatalı segment ismi")
-
-        self.push_type = "SegmentPush"
+    def __init__(self, platform, optin, global_frequency_capping, start_date, end_date, language, push_type, segment_name):
+        super().__init__(platform, optin, global_frequency_capping, start_date, end_date, language, push_type)
+        
         self.segment_name = segment_name
 
 class PriceAlertPush(WebPush):
-    def __init__(self):
-        self.push_type = "PriceAlertPush"
+    def __init__(self, platform, optin, global_frequency_capping, start_date, end_date, language, push_type, price_info, discount_rate):
+        super().__init__(platform, optin, global_frequency_capping, start_date, end_date, language, push_type)
 
-    def discountPrice(self, price_info, discount_rate):
-        return price_info - (price_info * discount_rate / 100)
+        self.price_info = price_info
+        self.discount_rate = discount_rate
+
+    def discountPrice(self):
+        return self.price_info * self.discount_rate
 
 class InStockPush(WebPush):
-    def __init__(self):
-        self.stock_info = True
-        self.push_type = "InStockPush"
+    def __init__(self, platform, optin, global_frequency_capping, start_date, end_date, language, push_type, stock_info):
+        super().__init__(platform, optin, global_frequency_capping, start_date, end_date, language, push_type)
+
+        self.stock_info = stock_info
 
     def stockUpdate(self):
         self.stock_info = not self.stock_info
@@ -55,43 +59,77 @@ class InStockPush(WebPush):
 
 # TriggerPush
 print("\n------------------------------------------------------------\nTriggerPush\n------------------------------------------------------------")
-test1 = TriggerPush("HomePage")
 
-print("PushType : " + test1.push_type)
-
-test1.send_push()
+TriggerPush(
+    "Desktop", 
+    True, 
+    15, 
+    datetime.datetime(2022, 1, 1).strftime("%m/%d/%Y"),
+    datetime.datetime(2022, 2, 1).strftime("%m/%d/%Y"), 
+    "tr_TR", 
+    "Trigger", 
+    "HomePage"
+    ).send_push().get_push_info()
 
 # BulkPush
 print("\n------------------------------------------------------------\nBulkPush\n------------------------------------------------------------")
-test2 = BulkPush(1656150514)
 
-print("PushType : " + test2.push_type)
-
-test2.send_push()
+BulkPush(
+    "Mobile", 
+    True, 
+    10, 
+    datetime.datetime(2022, 4, 1).strftime("%m/%d/%Y"),
+    datetime.datetime(2022, 5, 1).strftime("%m/%d/%Y"), 
+    "en_US", 
+    "Bulk", 
+    10
+    ).send_push().get_push_info()
 
 # SegmentPush
 print("\n------------------------------------------------------------\nSegmentPush\n------------------------------------------------------------")
-test3 = SegmentPush("Segment1")
 
-print("PushType : " + test3.push_type)
-
-test3.send_push()
+SegmentPush(
+    "Desktop", 
+    True, 
+    50, 
+    datetime.datetime(2022, 7, 1).strftime("%m/%d/%Y"),
+    datetime.datetime(2022, 10, 1).strftime("%m/%d/%Y"), 
+    "tr_TR", 
+    "Segment", 
+    "DiscountBuyers"
+    ).send_push().get_push_info()
 
 # PriceAlertPush
 print("\n------------------------------------------------------------\nPriceAlertPush\n------------------------------------------------------------")
-test4 = PriceAlertPush()
 
-print("Discounted Price : " + str(test4.discountPrice(50, 10)))
-print("PushType : " + test4.push_type)
+priceAlertPush = PriceAlertPush(
+    "Desktop", 
+    True, 
+    10, 
+    datetime.datetime(2022, 5, 1).strftime("%m/%d/%Y"),
+    datetime.datetime(2022, 9, 1).strftime("%m/%d/%Y"), 
+    "tr_TR", 
+    "PriceAlert", 
+    250,
+    0.3
+    )
 
-test4.send_push()
+priceAlertPush.send_push().get_push_info()
+print("* İndirimli Fiyat: " + str(priceAlertPush.discountPrice()))
 
 # InStockPush
 print("\n------------------------------------------------------------\nInStockPush\n------------------------------------------------------------")
-test5 = InStockPush()
 
-print("Stock Update : " + str(test5.stockUpdate()))
-print("Stock Update : " + str(test5.stockUpdate()))
-print("PushType : " + test5.push_type)
+inStockPush = InStockPush(
+    "Desktop", 
+    True, 
+    10, 
+    datetime.datetime(2022, 5, 1).strftime("%m/%d/%Y"),
+    datetime.datetime(2022, 9, 1).strftime("%m/%d/%Y"), 
+    "tr_TR", 
+    "InStockPush",
+    False
+    )
 
-test5.send_push()
+inStockPush.send_push().get_push_info()
+print("* Stok durumu: " + str(inStockPush.stockUpdate()))
