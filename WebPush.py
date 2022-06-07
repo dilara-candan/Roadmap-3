@@ -45,6 +45,7 @@ class PriceAlertPush(WebPush):
         self.discount_rate = discount_rate
 
     def discountPrice(self):
+        
         return self.price_info - self.price_info * self.discount_rate
 
 class InStockPush(WebPush):
