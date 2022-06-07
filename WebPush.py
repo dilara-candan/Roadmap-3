@@ -45,7 +45,6 @@ class PriceAlertPush(WebPush):
         self.discount_rate = discount_rate
 
     def discountPrice(self):
-        
         return self.price_info - self.price_info * self.discount_rate
 
 class InStockPush(WebPush):
@@ -78,14 +77,14 @@ SegmentPush("Desktop", True, 50, datetime.datetime(2022, 7, 1).strftime("%m/%d/%
 print("\n------------------------------------------------------------\nPriceAlertPush\n------------------------------------------------------------")
 
 priceAlertPush = PriceAlertPush("Desktop", True, 10, datetime.datetime(2022, 5, 1).strftime("%m/%d/%Y"), datetime.datetime(2022, 9, 1).strftime("%m/%d/%Y"), "tr_TR", 250, 0.3)
-
 priceAlertPush.send_push().get_push_info()
+
 print("* İndirimli Fiyat: " + str(priceAlertPush.discountPrice()))
 
 # InStockPush
 print("\n------------------------------------------------------------\nInStockPush\n------------------------------------------------------------")
 
 inStockPush = InStockPush("Desktop", True, 10, datetime.datetime(2022, 5, 1).strftime("%m/%d/%Y"), datetime.datetime(2022, 9, 1).strftime("%m/%d/%Y"), "tr_TR", False)
-
 inStockPush.send_push().get_push_info()
+
 print("* Stok durumu: " + str(inStockPush.stockUpdate()))
